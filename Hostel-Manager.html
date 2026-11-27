@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#137a4a"><title>Hostel Manager</title>
+<style>
+:root{--g:#137a4a;--gd:#0c6038;--bg:#f2f7f3;--ink:#17251d;--muted:#6b7b70;--line:#dce8df;--white:#fff;--red:#b42318;--amber:#a15c00}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Noto Sans Bengali",sans-serif}
+header{background:linear-gradient(135deg,#0b6038,#1c9258);color:white;padding:22px 18px 25px;border-radius:0 0 24px 24px}
+.top{display:flex;justify-content:space-between;align-items:center}.brand{font-size:23px;font-weight:850;letter-spacing:-.5px}.sub{opacity:.86;font-size:13px;margin-top:4px}
+.monthrow{display:flex;align-items:center;gap:10px;margin-top:20px}.monthrow label{font-size:13px;opacity:.9}.monthrow input{background:#ffffff1c;color:white;border:1px solid #ffffff55;padding:9px;border-radius:10px;font:inherit}
+main{max-width:760px;margin:auto;padding:16px 14px 90px}.status{display:flex;align-items:center;justify-content:space-between;margin:3px 2px 13px}.pill{font-size:12px;padding:6px 10px;border-radius:30px;background:#e0f3e6;color:var(--gd);font-weight:800}.pill.closed{background:#fff0d7;color:#8a4b00}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.stat{background:white;border:1px solid var(--line);border-radius:16px;padding:15px;box-shadow:0 2px 8px #153d1c08}.stat small{color:var(--muted);font-size:12px}.stat strong{display:block;color:var(--g);font-size:22px;margin-top:7px;overflow-wrap:anywhere}
+.tabs{display:flex;gap:8px;overflow:auto;padding:16px 0 12px}.tab{white-space:nowrap;border:1px solid var(--line);background:white;border-radius:999px;padding:9px 14px;font-weight:700;color:#536258}.tab.active{background:var(--g);border-color:var(--g);color:white}
+.panel{background:white;border:1px solid var(--line);border-radius:18px;padding:16px;margin-top:8px}.panel h2{font-size:17px;margin:0 0 13px}.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.field{display:flex;flex-direction:column;gap:5px}.field.full{grid-column:1/-1}.field label{font-size:12px;color:var(--muted);font-weight:700}.field input,.field select,.field textarea{width:100%;border:1px solid var(--line);border-radius:11px;padding:12px;background:#fbfdfb;font:inherit;min-width:0}.btn{border:0;border-radius:12px;background:var(--g);color:white;padding:12px 15px;font:inherit;font-weight:800;cursor:pointer}.btn:disabled{opacity:.4}.btn.secondary{background:#e8f3eb;color:var(--gd)}.btn.danger{background:#fff0ef;color:var(--red)}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.list{display:flex;flex-direction:column;gap:8px;margin-top:12px}.item{border:1px solid var(--line);border-radius:13px;padding:12px;display:flex;align-items:center;justify-content:space-between;gap:10px}.item b{font-size:14px}.item small{display:block;color:var(--muted);margin-top:3px}.amt{font-weight:850;color:var(--g);white-space:nowrap}.empty{color:var(--muted);font-size:13px;text-align:center;padding:22px 8px}.hint{font-size:12px;color:var(--muted);line-height:1.55;margin-top:12px}.hidden{display:none!important}.notice{background:#fff7e8;border:1px solid #f2d9a8;color:#754900;padding:11px;border-radius:12px;font-size:13px;margin-bottom:12px}.foot{color:var(--muted);font-size:11px;text-align:center;margin:22px 0}.smallbtn{border:0;background:#f0f5f1;color:#40564a;padding:7px 9px;border-radius:9px;font-weight:700}
+@media(min-width:600px){.grid{grid-template-columns:repeat(3,1fr)}main{padding-top:22px}.brand{font-size:26px}}
+</style></head>
+<body>
+<header><div class="top"><div><div class="brand">🏠 Hostel Manager</div><div class="sub">হোস্টেলের মাসিক হিসাব ব্যবস্থাপনা</div></div><div style="font-size:26px">🌿</div></div>
+<div class="monthrow"><label for="month">হিসাবের মাস</label><input id="month" type="month"></div></header>
+<main>
+<div class="status"><b id="monthTitle">মাসের সারাংশ</b><span id="state" class="pill">চলমান</span></div>
+<div id="closedNotice" class="notice hidden">এই মাসের হিসাব CLOSED। নতুন এন্ট্রি বন্ধ আছে। নতুন মাস নির্বাচন করলে সম্পূর্ণ নতুন হিসাব শুরু হবে।</div>
+<section class="grid" id="stats"></section>
+<nav class="tabs">
+<button class="tab active" data-tab="deposit">জমা</button><button class="tab" data-tab="expense">খরচ</button><button class="tab" data-tab="meal">মিল</button><button class="tab" data-tab="members">সদস্য</button><button class="tab" data-tab="report">রিপোর্ট</button>
+</nav>
+<section id="deposit" class="panel">
+<h2>💰 টাকা জমা</h2><div class="formgrid"><div class="field"><label>সদস্য</label><select id="depMember"></select></div><div class="field"><label>টাকার পরিমাণ (৳)</label><input id="depAmount" type="number" min="1" placeholder="যেমন ২০০০"></div><div class="field full"><label>তারিখ</label><input id="depDate" type="date"></div></div><div class="actions"><button class="btn" onclick="addEntry('deposit')">জমা যোগ করুন</button></div><div id="depositList" class="list"></div>
+</section>
+<section id="expense" class="panel hidden">
+<h2>🧾 খরচ যোগ করুন</h2><div class="formgrid"><div class="field"><label>খরচের ধরন</label><select id="expCategory"><option value="market">বাজার</option><option value="misc">অন্যান্য</option></select></div><div class="field"><label>টাকার পরিমাণ (৳)</label><input id="expAmount" type="number" min="1" placeholder="যেমন ৫০০"></div><div class="field"><label>তারিখ</label><input id="expDate" type="date"></div><div class="field"><label>কে দিয়েছেন?</label><input id="expBy" placeholder="নাম (ঐচ্ছিক)"></div><div class="field full"><label>বিবরণ</label><input id="expNote" placeholder="যেমন চাল, ডাল, বিদ্যুৎ বিল"></div></div><div class="actions"><button class="btn" onclick="addEntry('expense')">খরচ যোগ করুন</button></div><div id="expenseList" class="list"></div>
+</section>
+<section id="meal" class="panel hidden">
+<h2>🍛 দৈনিক মিল</h2><div class="formgrid"><div class="field"><label>সদস্য</label><select id="mealMember"></select></div><div class="field"><label>মিল সংখ্যা</label><input id="mealCount" type="number" min="0" step=".5" value="1"></div><div class="field full"><label>তারিখ</label><input id="mealDate" type="date"></div></div><div class="actions"><button class="btn" onclick="addEntry('meal')">মিল যোগ করুন</button></div><div id="mealList" class="list"></div><p class="hint">এটি প্রাথমিক মিল-এন্ট্রি খাতা। মিল রেট/মাসিক অটো-শেয়ার হিসাব পরবর্তী উন্নয়নে যোগ করা যাবে।</p>
+</section>
+<section id="members" class="panel hidden">
+<h2>👥 সদস্য ব্যবস্থাপনা</h2><div class="formgrid"><div class="field"><label>সদস্যের নাম</label><input id="memberName" placeholder="পূর্ণ নাম"></div><div class="field"><label>মোবাইল (ঐচ্ছিক)</label><input id="memberPhone" inputmode="tel" placeholder="01XXXXXXXXX"></div></div><div class="actions"><button class="btn" onclick="addMember()">সদস্য যোগ করুন</button></div><div id="memberList" class="list"></div>
+</section>
+<section id="report" class="panel hidden">
+<h2>📊 মাসের রিপোর্ট</h2><div id="reportBody"></div><div class="actions"><button class="btn secondary" onclick="exportBackup()">ডেটা Backup</button><button class="btn secondary" onclick="exportCSV()">CSV রিপোর্ট</button><button class="btn danger" id="closeBtn" onclick="closeMonth()">মাসের হিসাব CLOSED করুন</button></div><div class="hint">প্রতিটি মাসের হিসাব আলাদা। আগের মাসের জমা, খরচ বা Cash Balance নতুন মাসে যোগ হবে না। Backup ফাইল নিরাপদে রেখে দিন।</div>
+</section>
+<div class="foot">ডেটা এই ডিভাইসের ব্রাউজারে সংরক্ষিত থাকে • নিয়মিত Backup নিন</div>
+</main>
+<script>
+const $=id=>document.getElementById(id), today=new Date().toISOString().slice(0,10);
+$('month').value=today.slice(0,7);['depDate','expDate','mealDate'].forEach(id=>$(id).value=today);
+let db=JSON.parse(localStorage.getItem('hostelManagerDB')||'{}');
+function key(){return $('month').value}
+function fresh(){if(!db[key()])db[key()]={status:'open',members:[],deposits:[],expenses:[],meals:[]};return db[key()]}
+function save(){localStorage.setItem('hostelManagerDB',JSON.stringify(db));render()}
+function money(n){return '৳ '+Number(n||0).toLocaleString('en-BD',{maximumFractionDigits:2})}
+function sum(a){return a.reduce((s,x)=>s+Number(x.amount||0),0)}
+function canEdit(){return fresh().status!=='closed'}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function addMember(){if(!canEdit())return;let name=$('memberName').value.trim();if(!name)return alert('সদস্যের নাম লিখুন');fresh().members.push({id:Date.now(),name,phone:$('memberPhone').value.trim()});$('memberName').value='';$('memberPhone').value='';save()}
+function addEntry(type){if(!canEdit())return alert('এই মাস CLOSED');let m=fresh();if(type==='deposit'){let amount=+$('depAmount').value;if(!amount||amount<1)return alert('সঠিক টাকার পরিমাণ দিন');m.deposits.push({id:Date.now(),member:$('depMember').value,amount,date:$('depDate').value||today});$('depAmount').value=''}
+if(type==='expense'){let amount=+$('expAmount').value;if(!amount||amount<1)return alert('সঠিক টাকার পরিমাণ দিন');m.expenses.push({id:Date.now(),category:$('expCategory').value,amount,date:$('expDate').value||today,by:$('expBy').value,note:$('expNote').value});$('expAmount').value='';$('expNote').value='';$('expBy').value=''}
+if(type==='meal'){let count=+$('mealCount').value;if(count<0)return alert('সঠিক মিল সংখ্যা দিন');m.meals.push({id:Date.now(),member:$('mealMember').value,count,date:$('mealDate').value||today});}
+save()}
+function removeItem(type,id){if(!canEdit())return; if(!confirm('এই এন্ট্রি মুছে ফেলবেন?'))return;let m=fresh();m[type]=m[type].filter(x=>x.id!==id);save()}
+function closeMonth(){let m=fresh();if(m.status==='closed')return;if(!confirm(key()+' মাসের হিসাব CLOSED করবেন? এরপর এই মাসে নতুন এন্ট্রি করা যাবে না।'))return;m.status='closed';save()}
+function listHTML(arr,type,render){return arr.length?arr.slice().reverse().map(x=>render(x)).join(''):'<div class="empty">এখনো কোনো তথ্য যোগ করা হয়নি</div>'}
+function del(type,id){return `<button class="smallbtn" onclick="removeItem('${type}',${id})">মুছুন</button>`}
+function render(){let m=fresh(),dep=sum(m.deposits),market=sum(m.expenses.filter(x=>x.category==='market')),misc=sum(m.expenses.filter(x=>x.category==='misc')),paid=sum(m.expenses),meals=m.meals.reduce((s,x)=>s+Number(x.count),0),cash=dep-paid;
+$('monthTitle').textContent=new Date(key()+'-02').toLocaleDateString('bn-BD',{month:'long',year:'numeric'})+' সারাংশ';
+$('state').textContent=m.status==='closed'?'CLOSED':'চলমান';$('state').className='pill '+(m.status==='closed'?'closed':'');$('closedNotice').classList.toggle('hidden',m.status!=='closed');
+$('stats').innerHTML=[['মোট সদস্য',m.members.length+' জন'],['মোট মিল',meals],['বাজার খরচ',money(market)],['অন্যান্য খরচ',money(misc)],['মোট জমা',money(dep)],['Cash Balance',money(cash)]].map(([a,b])=>`<div class="stat"><small>${a}</small><strong>${b}</strong></div>`).join('');
+['depMember','mealMember'].forEach(id=>$(id).innerHTML=m.members.length?m.members.map(x=>`<option>${esc(x.name)}</option>`).join(''):'<option value="">আগে সদস্য যোগ করুন</option>');
+$('depositList').innerHTML=listHTML(m.deposits,'deposits',x=>`<div class="item"><div><b>${esc(x.member||'সদস্য')}</b><small>${esc(x.date)}</small></div><span class="amt">${money(x.amount)}</span>${del('deposits',x.id)}</div>`);
+$('expenseList').innerHTML=listHTML(m.expenses,'expenses',x=>`<div class="item"><div><b>${x.category==='market'?'বাজার':'অন্যান্য'} · ${esc(x.note||x.by||'খরচ')}</b><small>${esc(x.date)} ${x.by?'· '+esc(x.by):''}</small></div><span class="amt">${money(x.amount)}</span>${del('expenses',x.id)}</div>`);
+$('mealList').innerHTML=listHTML(m.meals,'meals',x=>`<div class="item"><div><b>${esc(x.member)}</b><small>${esc(x.date)}</small></div><span class="amt">${x.count} মিল</span>${del('meals',x.id)}</div>`);
+$('memberList').innerHTML=listHTML(m.members,'members',x=>`<div class="item"><div><b>${esc(x.name)}</b><small>${esc(x.phone||'মোবাইল দেওয়া হয়নি')}</small></div>${del('members',x.id)}</div>`);
+$('reportBody').innerHTML=`<div class="item"><span>মোট জমা</span><b>${money(dep)}</b></div><div class="item"><span>মোট খরচ</span><b>${money(paid)}</b></div><div class="item"><span>বাজার</span><b>${money(market)}</b></div><div class="item"><span>অন্যান্য</span><b>${money(misc)}</b></div><div class="item"><span>Cash Balance</span><b>${money(cash)}</b></div><div class="item"><span>মোট মিল</span><b>${meals}</b></div>`;
+$('closeBtn').disabled=m.status==='closed';document.querySelectorAll('.panel input,.panel select,.panel .btn:not(.secondary)').forEach(el=>{if(el.id!=='closeBtn')el.disabled=!canEdit()});
+}
+function exportBackup(){let blob=new Blob([JSON.stringify(db,null,2)],{type:'application/json'});download(blob,'hostel-manager-backup.json')}
+function exportCSV(){let m=fresh(),rows=[['ধরন','তারিখ','নাম/বিবরণ','টাকা/মিল']];m.deposits.forEach(x=>rows.push(['জমা',x.date,x.member,x.amount]));m.expenses.forEach(x=>rows.push([x.category==='market'?'বাজার':'অন্যান্য',x.date,x.note||x.by,x.amount]));m.meals.forEach(x=>rows.push(['মিল',x.date,x.member,x.count]));let csv='\ufeff'+rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\n');download(new Blob([csv],{type:'text/csv;charset=utf-8'}),'hostel-'+key()+'.csv')}
+function download(blob,name){let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('main>section.panel').forEach(x=>x.classList.toggle('hidden',x.id!==b.dataset.tab))});
+$('month').addEventListener('change',render);render();
+</script></body></html>
